@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/dao/LibroDao.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/dao/FichaBibliograficaDao.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/config/DatabaseConnection.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/sql/LibroSQL.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/sql/FichaBibliograficaSQL.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/dao/GenericDao.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/entities/FichaBibliografica.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/src/entities/Libro.java</file>
+            <file>file:/C:/Users/lejew/Documents/NetBeansProjects/TPI-Gurpo85-FichaBibliografica/Database/fichaBibliografica.sql</file>
+        </group>
+    </open-files>
+</project-private>

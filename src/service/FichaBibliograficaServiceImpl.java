@@ -1,33 +1,34 @@
 package service;
 
 import entities.FichaBibliografica;
-import dao.FichaBibliograficaDAO;
+//import dao.FichaBibliograficaDAO;
 import java.sql.Connection;
 import java.util.List;
+import service.validations.ValidacionService;
 
 public class FichaBibliograficaServiceImpl implements FichaBibliograficaService {
 
-    private FichaBibliograficaDAO fichaDAO;
+    //private FichaBibliograficaDAO fichaDAO;
 
 
     public FichaBibliograficaServiceImpl() {}
 
     // SETTER para inyección de dependencias
-    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
-        this.fichaDAO = fichaDAO;
-    }
+//    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
+//        this.fichaDAO = fichaDAO;
+//    }
 
     // --- MÉTODOS HEREDADOS DE GenericService ---
 
     @Override
     public FichaBibliografica crear(FichaBibliografica ficha) throws Exception {
-        validarFichaBibliografica(ficha);
-        validarIsbnUnico(ficha.getIsbn());
+        ValidacionService.validarFichaBibliografica(ficha);
+        ValidacionService.validarIsbnUnico(ficha.getIsbn());
 
         System.out.println("Creando ficha bibliográfica - ISBN: " + ficha.getIsbn());
 
         // LLAMADA AL DAO DE JULIÁN
-        fichaDAO.crear(ficha);
+        //fichaDAO.crear(ficha);
 
         System.out.println("Ficha creada correctamente: " + ficha.getIsbn());
         return ficha;
@@ -35,57 +36,54 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
 
     @Override
     public void actualizar(FichaBibliografica ficha) throws Exception {
-        validarFichaBibliografica(ficha);
+        ValidacionService.validarFichaBibliografica(ficha);
         System.out.println("Actualizando ficha bibliográfica - ISBN: " + ficha.getIsbn());
 
         // LLAMADA AL DAO DE JULIÁN
-        fichaDAO.actualizar(ficha);
+        //fichaDAO.actualizar(ficha);
 
         System.out.println("Ficha actualizada correctamente: " + ficha.getIsbn());
     }
 
     @Override
     public void eliminar(Long id) throws Exception {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de ficha inválido");
-        }
+        ValidacionService.validarId(id, "ficha bibliográfica");
 
         System.out.println("🗑️ Eliminando ficha bibliográfica ID: " + id);
 
         // LLAMADA AL DAO DE JULIÁN
-        fichaDAO.eliminar(id);
+        //fichaDAO.eliminar(id);
 
         System.out.println("Ficha eliminada correctamente ID: " + id);
     }
 
     @Override
     public FichaBibliografica buscarPorId(Long id) throws Exception {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de ficha inválido");
-        }
-
-        System.out.println("🔍 Buscando ficha por ID: " + id);
+        ValidacionService.validarId(id, "ficha bibliográfica");
+        System.out.println("Buscando ficha por ID: " + id);
 
         // LLAMADA AL DAO DE JULIÁN
-        FichaBibliografica ficha = fichaDAO.leer(id);
+        //FichaBibliografica ficha = fichaDAO.leer(id);
 
-        if (ficha == null) {
-            throw new Exception("No se encontró ficha con ID: " + id);
-        }
+        //if (ficha == null) {
+            //throw new Exception("No se encontró ficha con ID: " + id);
+       // }
 
-        System.out.println("Ficha encontrada - ID: " + id + ", ISBN: " + ficha.getIsbn());
-        return ficha;
+        //System.out.println("Ficha encontrada - ID: " + id + ", ISBN: " + ficha.getIsbn());
+        //return ficha;
+        return null; // Temporal
     }
 
     @Override
     public List<FichaBibliografica> listarTodos() throws Exception {
-        System.out.println("📋 Listando todas las fichas bibliográficas");
+        System.out.println("Listando todas las fichas bibliográficas");
 
         // LLAMADA AL DAO DE JULIÁN
-        List<FichaBibliografica> fichas = fichaDAO.leerTodos();
+        //List<FichaBibliografica> fichas = fichaDAO.leerTodos();
 
-        System.out.println("Listado completado - " + fichas.size() + " fichas encontradas");
-        return fichas;
+        //System.out.println("Listado completado - " + fichas.size() + " fichas encontradas");
+        //return fichas;
+        return null; // Temporal
     }
 
     // --- MÉTODOS ESPECÍFICOS DE FichaBibliograficaService ---
@@ -137,9 +135,7 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
 
     @Override
     public void validarIsbnUnico(String isbn) throws Exception {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            throw new IllegalArgumentException("El ISBN no puede estar vacío");
-        }
+        ValidacionService.validarIsbnUnico(isbn);
 
         System.out.println("Validando ISBN único: " + isbn);
 
@@ -155,22 +151,5 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
         }
 
         System.out.println("ISBN único y válido: " + isbn);
-    }
-
-    // --- VALIDACIÓN ---
-    public void validarFichaBibliografica(FichaBibliografica ficha) {
-        if (ficha == null) {
-            throw new IllegalArgumentException("La ficha bibliográfica no puede ser nula");
-        }
-        if (ficha.getIsbn() == null || ficha.getIsbn().trim().isEmpty()) {
-            throw new IllegalArgumentException("El ISBN es obligatorio");
-        }
-        if (ficha.getIsbn().length() > 17) {
-            throw new IllegalArgumentException("El ISBN no puede exceder 17 caracteres");
-        }
-        // Validación adicional: formato básico de ISBN
-        if (!ficha.getIsbn().matches("[0-9Xx-]+")) {
-            throw new IllegalArgumentException("El ISBN contiene caracteres inválidos");
-        }
     }
 }

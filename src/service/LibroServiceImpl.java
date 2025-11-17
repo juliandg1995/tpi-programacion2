@@ -2,94 +2,98 @@ package service;
 
 import entities.Libro;
 import entities.FichaBibliografica;
-import dao.GenericDao;
+import service.validations.ValidacionService;
 import java.sql.Connection;
 import java.util.List;
 
 public class LibroServiceImpl implements LibroService {
 
-    private LibroDao libroDAO;                    //  DAO concreto de Sandra
-    private FichaBibliograficaDao fichaDAO;       //  DAO concreto de Julián
+   // private LibroDao libroDAO;                    //  DAO concreto de Sandra
+   // private FichaBibliograficaDao fichaDAO;       //  DAO concreto de Julián
     private FichaBibliograficaService fichaService;
-    private FichaBibliograficaServiceImpl fichaServiceImpl;
 
 
     public LibroServiceImpl() {}
 
+    public LibroServiceImpl(FichaBibliograficaService fichaService) {
+        this.fichaService = fichaService;
+    }
+
+    // Constructor para inyección de dependencias
+//    public LibroServiceImpl(LibroDao libroDao, FichaBibliograficaService fichaService) {
+//        this.libroDao = libroDao;
+//        this.fichaService = fichaService;
+//    }
 
     // SETTERS para inyección de dependencias
-    public void setLibroDAO(LibroDao libroDAO) {
-        this.libroDAO = libroDAO;
-    }
+//    public void setLibroDAO(LibroDao libroDAO) {
+//        this.libroDAO = libroDAO;
+//    }
 
-    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
-        this.fichaDAO = fichaDAO;
-    }
+//    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
+//        this.fichaDAO = fichaDAO;
+//    }
 
     public void setFichaService(FichaBibliograficaService fichaService) {
         this.fichaService = fichaService;
     }
 
-    public void setfichaServiceImpl(FichaBibliograficaServiceImpl fichaServiceImpl) {
-        this.fichaServiceImpl = fichaServiceImpl;
-    }
 
     // --- MÉTODOS HEREDADOS DE GenericService ---
 
     @Override
     public Libro crear(Libro libro) throws Exception {
-        validarLibro(libro);
+        ValidacionService.validarLibro(libro);
         System.out.println("Creando libro: " + libro.getTitulo());
 
         // LLAMADA AL DAO DE SANDRA
-        Libro libroCreado = libroDAO.crear(libro);
+        //Libro libroCreado = libroDAO.crear(libro);
 
-        System.out.println("Libro creado correctamente - ID: " + libroCreado.getId());
-        return libroCreado;
+        //System.out.println("Libro creado correctamente - ID: " + libroCreado.getId());
+        //return libroCreado;
+
+        return null; // Temporal
     }
 
     @Override
     public void actualizar(Libro libro) throws Exception {
-        validarLibro(libro);
+        ValidacionService.validarLibro(libro);
         System.out.println("Actualizando libro: " + libro.getTitulo());
 
         // LLAMADA AL DAO DE SANDRA
-        libroDAO.actualizar(libro);
+        //libroDAO.actualizar(libro);
 
         System.out.println("Libro actualizado correctamente - ID: " + libro.getId());
     }
 
     @Override
     public void eliminar(Long id) throws Exception {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de libro inválido");
-        }
-
-        System.out.println("🗑Eliminando libro ID: " + id);
+        ValidacionService.validarId(id, "libro"); // ← NUEVA VALIDACIÓN
+        System.out.println("🗑️ Eliminando libro ID: " + id);
 
         // LLAMADA AL DAO DE SANDRA
-        libroDAO.eliminar(id);
+        // libroDAO.eliminar(id);
 
         System.out.println("Libro eliminado correctamente ID: " + id);
     }
 
     @Override
     public Libro buscarPorId(Long id) throws Exception {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de libro inválido");
-        }
+        ValidacionService.validarId(id, "libro");
 
         System.out.println("Buscando libro por ID: " + id);
 
         // LLAMADA AL DAO DE SANDRA (con JOIN automático)
-        Libro libro = libroDAO.leer(id);
+       //Libro libro = libroDAO.leer(id);
 
-        if (libro == null) {
-            throw new Exception("No se encontró libro con ID: " + id);
-        }
+//        if (libro == null) {
+//            throw new Exception("No se encontró libro con ID: " + id);
+//        }
 
-        System.out.println("Libro encontrado - ID: " + id + ", Título: " + libro.getTitulo());
-        return libro;
+        //System.out.println("Libro encontrado - ID: " + id + ", Título: " + libro.getTitulo());
+        //return libro;
+
+        return null; // Temporal
     }
 
     @Override
@@ -97,60 +101,54 @@ public class LibroServiceImpl implements LibroService {
         System.out.println("Listando todos los libros");
 
         // LLAMADA AL DAO DE SANDRA (con JOIN automático)
-        List<Libro> libros = libroDAO.leerTodos();
+        //List<Libro> libros = libroDAO.leerTodos();
 
-        System.out.println("Listado completado - " + libros.size() + " libros encontrados");
-        return libros;
+        //System.out.println("Listado completado - " + libros.size() + " libros encontrados");
+        //return libros;
+
+        return null; //Temporal
     }
 
     // --- MÉTODOS ESPECÍFICOS DE LibroService ---
 
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
-        // Validaciones previas
-        validarLibro(libro);
-        if (ficha == null) {
-            throw new IllegalArgumentException("La ficha bibliográfica no puede ser nula");
-        }
-        // TODO: Cuando se inyecte fichaService → fichaService.validarFichaBibliografica(ficha);
-        System.out.println("   Validación de ficha (simulada)");
+        System.out.println("INICIANDO TRANSACCIÓN: Crear Libro con Ficha Bibliográfica");
 
-        System.out.println("Iniciando transacción para crear Libro con Ficha...");
-        System.out.println("   Libro: " + libro.getTitulo());
-        System.out.println("   Ficha ISBN: " + ficha.getIsbn());
+        // VALIDACIONES CENTRALIZADAS
+        ValidacionService.validarLibro(libro);
+        ValidacionService.validarFichaBibliografica(ficha);
+        ValidacionService.validarIsbnUnico(ficha.getIsbn());
+        ValidacionService.validarTituloUnico(libro.getTitulo());
 
-        // ESTRUCTURA TRANSACCIONAL PROFESIONAL
-        // (Simulada por ahora - se conectará a BD real después)
+        System.out.println("  Libro: " + libro.getTitulo());
+        System.out.println("  Ficha ISBN: " + ficha.getIsbn());
 
+        // ESTRUCTURA TRANSACCIONAL
         Connection conn = null;
         boolean operacionExitosa = false;
 
         try {
-            // SIMULACIÓN: Obtener conexión (cuando Melisa tenga DatabaseConnection)
+            // SIMULACIÓN: Obtener conexión
             // conn = DatabaseConnection.getConnection();
             // conn.setAutoCommit(false);
-
             System.out.println("   Conexión establecida - AutoCommit: false");
 
-            // 1. VALIDAR ISBN ÚNICO
-            System.out.println("   Validando ISBN único: " + ficha.getIsbn());
-            // fichaService.validarIsbnUnico(ficha.getIsbn());
-
-            // 2. CREAR FICHA BIBLIOGRÁFICA
+            // 1. CREAR FICHA BIBLIOGRÁFICA
             System.out.println("   Insertando ficha bibliográfica...");
             // FichaBibliografica fichaCreada = fichaDAO.crear(ficha, conn);
             FichaBibliografica fichaCreada = ficha; // Simulación
 
-            // 3. ASIGNAR FICHA AL LIBRO
+            // 2. ASIGNAR FICHA AL LIBRO
             libro.setFichaBibliografica(fichaCreada);
             System.out.println("   Ficha asignada al libro");
 
-            // 4. CREAR LIBRO
+            // 3. CREAR LIBRO
             System.out.println("   Insertando libro...");
             // Libro libroCreado = libroDAO.crear(libro, conn);
             Libro libroCreado = libro; // Simulación
 
-            // 5. CONFIRMAR TRANSACCIÓN
+            // 4. CONFIRMAR TRANSACCIÓN
             // conn.commit();
             System.out.println("   TRANSACCIÓN EXITOSA - Commit realizado");
             operacionExitosa = true;
@@ -159,7 +157,7 @@ public class LibroServiceImpl implements LibroService {
             System.out.println("Ficha creada exitosamente con ISBN: " + fichaCreada.getIsbn());
 
         } catch (Exception error) {
-            // 6. REVERTIR EN CASO DE ERROR
+            // 5. REVERTIR EN CASO DE ERROR
             System.out.println("   ERROR en transacción: " + error.getMessage());
 
             // if (conn != null) {
@@ -168,18 +166,17 @@ public class LibroServiceImpl implements LibroService {
             // }
             System.out.println("   Rollback SIMULADO - Base de datos restaurada");
 
-            // Relanzar la excepción con contexto
             throw new Exception("Error al crear libro con ficha: " + error.getMessage(), error);
 
         } finally {
-            // 7. LIMPIAR RECURSOS
+            // 6. LIMPIAR RECURSOS
             // if (conn != null) {
             //     try {
             //         conn.setAutoCommit(true);
             //         conn.close();
             //         System.out.println("   Conexión cerrada - AutoCommit: true");
             //     } catch (SQLException e) {
-            //         System.err.println("   ⚠Error al cerrar conexión: " + e.getMessage());
+            //         System.err.println("   Error al cerrar conexión: " + e.getMessage());
             //     }
             // }
             System.out.println("   Limpieza de recursos completada");
@@ -192,6 +189,7 @@ public class LibroServiceImpl implements LibroService {
             }
         }
     }
+
 /*
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
@@ -269,7 +267,7 @@ public class LibroServiceImpl implements LibroService {
             throw new IllegalArgumentException("La ficha bibliográfica no puede ser nula");
         }
 
-        fichaServiceImpl.validarFichaBibliografica(ficha);
+        ValidacionService.validarFichaBibliografica(ficha);
 
         System.out.println("Asignando ficha a libro existente...");
         System.out.println("   Libro ID: " + idLibro);
@@ -345,18 +343,5 @@ public class LibroServiceImpl implements LibroService {
 
         System.out.println("Resultado: " + (existe ? "EXISTE" : "NO EXISTE"));
         return existe;
-    }
-
-    // --- VALIDACIONES INTERNAS ---
-    private void validarLibro(Libro libro) throws Exception {
-        if (libro == null) {
-            throw new IllegalArgumentException("El libro no puede ser nulo");
-        }
-        if (libro.getTitulo() == null || libro.getTitulo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El título es obligatorio");
-        }
-        if (libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
-            throw new IllegalArgumentException("El autor es obligatorio");
-        }
     }
 }

@@ -1,34 +1,34 @@
 package service;
 
 import entities.FichaBibliografica;
-//import dao.FichaBibliograficaDAO;
+import dao.FichaBibliograficaDao;
 import java.sql.Connection;
 import java.util.List;
 import service.validations.ValidacionService;
 
 public class FichaBibliograficaServiceImpl implements FichaBibliograficaService {
 
-    //private FichaBibliograficaDAO fichaDAO;
+    private FichaBibliograficaDao fichaDAO;
 
+    public FichaBibliograficaServiceImpl() {
+        this.fichaDAO = new FichaBibliograficaDao();
+    }
 
-    public FichaBibliograficaServiceImpl() {}
-
-    // SETTER para inyección de dependencias
-//    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
-//        this.fichaDAO = fichaDAO;
-//    }
+    // SETTER para inyección de dependencias (opcional)
+    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
+        this.fichaDAO = fichaDAO;
+    }
 
     // --- MÉTODOS HEREDADOS DE GenericService ---
 
     @Override
     public FichaBibliografica crear(FichaBibliografica ficha) throws Exception {
         ValidacionService.validarFichaBibliografica(ficha);
-        ValidacionService.validarIsbnUnico(ficha.getIsbn());
+        validarIsbnUnico(ficha.getIsbn());
 
         System.out.println("Creando ficha bibliográfica - ISBN: " + ficha.getIsbn());
 
-        // LLAMADA AL DAO DE JULIÁN
-        //fichaDAO.crear(ficha);
+        fichaDAO.crear(ficha);
 
         System.out.println("Ficha creada correctamente: " + ficha.getIsbn());
         return ficha;
@@ -37,10 +37,16 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
     @Override
     public void actualizar(FichaBibliografica ficha) throws Exception {
         ValidacionService.validarFichaBibliografica(ficha);
+
+        // Verificar que la ficha existe antes de actualizar
+        FichaBibliografica existente = buscarPorId(ficha.getId());
+        if (existente == null) {
+            throw new Exception("No se puede actualizar: no existe ficha con ID " + ficha.getId());
+        }
+
         System.out.println("Actualizando ficha bibliográfica - ISBN: " + ficha.getIsbn());
 
-        // LLAMADA AL DAO DE JULIÁN
-        //fichaDAO.actualizar(ficha);
+        fichaDAO.actualizar(ficha);
 
         System.out.println("Ficha actualizada correctamente: " + ficha.getIsbn());
     }
@@ -49,10 +55,16 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
     public void eliminar(Long id) throws Exception {
         ValidacionService.validarId(id, "ficha bibliográfica");
 
-        System.out.println("🗑️ Eliminando ficha bibliográfica ID: " + id);
+        // Verificar que existe antes de eliminar
+        FichaBibliografica existente = buscarPorId(id);
+        if (existente == null) {
+            throw new Exception("No se puede eliminar: no existe ficha con ID " + id);
+        }
 
-        // LLAMADA AL DAO DE JULIÁN
-        //fichaDAO.eliminar(id);
+        System.out.println("Eliminando ficha bibliográfica ID: " + id);
+
+        // LLAMADA AL DAO (eliminación lógica)
+        fichaDAO.eliminar(id);
 
         System.out.println("Ficha eliminada correctamente ID: " + id);
     }
@@ -62,28 +74,25 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
         ValidacionService.validarId(id, "ficha bibliográfica");
         System.out.println("Buscando ficha por ID: " + id);
 
-        // LLAMADA AL DAO DE JULIÁN
-        //FichaBibliografica ficha = fichaDAO.leer(id);
+        // LLAMADA REAL AL DAO DE JULIÁN
+        FichaBibliografica ficha = fichaDAO.leer(id);
 
-        //if (ficha == null) {
-            //throw new Exception("No se encontró ficha con ID: " + id);
-       // }
+        if (ficha == null) {
+            throw new Exception("No se encontró ficha con ID: " + id);
+        }
 
-        //System.out.println("Ficha encontrada - ID: " + id + ", ISBN: " + ficha.getIsbn());
-        //return ficha;
-        return null; // Temporal
+        System.out.println("Ficha encontrada - ID: " + id + ", ISBN: " + ficha.getIsbn());
+        return ficha;
     }
 
     @Override
     public List<FichaBibliografica> listarTodos() throws Exception {
         System.out.println("Listando todas las fichas bibliográficas");
 
-        // LLAMADA AL DAO DE JULIÁN
-        //List<FichaBibliografica> fichas = fichaDAO.leerTodos();
+        List<FichaBibliografica> fichas = fichaDAO.leerTodos();
 
-        //System.out.println("Listado completado - " + fichas.size() + " fichas encontradas");
-        //return fichas;
-        return null; // Temporal
+        System.out.println("Listado completado - " + fichas.size() + " fichas encontradas");
+        return fichas;
     }
 
     // --- MÉTODOS ESPECÍFICOS DE FichaBibliograficaService ---
@@ -101,53 +110,32 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
 
         System.out.println("Buscando ficha por ISBN: " + isbn);
 
-        // SIMULACIÓN TEMPORAL - cuando el DAO esté listo:
-        // FichaBibliografica ficha = fichaDAO.buscarPorIsbn(isbn);
-        // if (ficha == null) {
-        //     throw new Exception("No se encontró ficha con ISBN: " + isbn);
-        // }
-        // return ficha;
-
-        // Por ahora simulamos diferentes escenarios:
-        if (isbn.equals("978-1234567890")) {
-            FichaBibliografica fichaSimulada = new FichaBibliografica();
-            fichaSimulada.setId(1L);
-            fichaSimulada.setIsbn(isbn);
-            fichaSimulada.setClasificacionDewey("025.4");
-            fichaSimulada.setEstanteria("A25");
-            fichaSimulada.setIdioma("Español");
-            System.out.println("Ficha encontrada: " + isbn);
-            return fichaSimulada;
-        } else if (isbn.equals("978-0987654321")) {
-            FichaBibliografica fichaSimulada = new FichaBibliografica();
-            fichaSimulada.setId(2L);
-            fichaSimulada.setIsbn(isbn);
-            fichaSimulada.setClasificacionDewey("028.5");
-            fichaSimulada.setEstanteria("B12");
-            fichaSimulada.setIdioma("Inglés");
-            System.out.println("Ficha encontrada: " + isbn);
-            return fichaSimulada;
-        } else {
-            System.out.println("Ficha NO encontrada: " + isbn);
-            return null; // Simula que no se encontró
+        // LLAMADA AL DAO - necesitamos implementar este método en el DAO
+        // Por ahora usamos una implementación temporal
+        List<FichaBibliografica> todasLasFichas = listarTodos();
+        for (FichaBibliografica ficha : todasLasFichas) {
+            if (isbn.equals(ficha.getIsbn())) {
+                System.out.println("Ficha encontrada: " + isbn);
+                return ficha;
+            }
         }
+
+        System.out.println("Ficha NO encontrada: " + isbn);
+        return null;
     }
 
     @Override
     public void validarIsbnUnico(String isbn) throws Exception {
-        ValidacionService.validarIsbnUnico(isbn);
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ISBN no puede estar vacío");
+        }
 
         System.out.println("Validando ISBN único: " + isbn);
 
-        // CUANDO EL DAO ESTÉ LISTO:
-        // FichaBibliografica existente = buscarPorIsbn(isbn);
-        // if (existe != null) {
-        //     throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema");
-        // }
-
-        // Simulación temporal:
-        if (isbn.equals("978-1234567890") || isbn.equals("978-0987654321")) {
-            throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema (simulación)");
+        // VERIFICACIÓN REAL CON LA BASE DE DATOS
+        FichaBibliografica existente = buscarPorIsbn(isbn);
+        if (existente != null) {
+            throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema");
         }
 
         System.out.println("ISBN único y válido: " + isbn);

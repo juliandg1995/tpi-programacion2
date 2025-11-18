@@ -21,9 +21,9 @@ public class TestTransaccionSimple {
 
             // Ficha de prueba
             FichaBibliografica ficha = new FichaBibliografica();
-            ficha.setIsbn("978-8437604947");
+            ficha.setIsbn("978-8467031256");
             ficha.setClasificacionDewey("863");
-            ficha.setEstanteria("LAT-A1");
+            ficha.setEstanteria("CL-A1");
             ficha.setIdioma("Español");
 
             System.out.println("Libro: " + libro.getTitulo());

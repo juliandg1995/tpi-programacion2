@@ -2,6 +2,7 @@ package service.validations;
 
 import entities.FichaBibliografica;
 import entities.Libro;
+import java.util.List;
 
 /**
  * Servicio centralizado para validaciones de negocio
@@ -123,18 +124,26 @@ public class ValidacionService {
 
         System.out.println("Validando unicidad de ISBN: " + isbn);
 
-        // SIMULACIÓN TEMPORAL - Cuando el DAO esté listo, aquí irá la consulta real
-        // FichaBibliografica existente = fichaDao.buscarPorIsbn(isbn);
-        // if (existente != null) {
-        //     throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema");
-        // }
+        try {
+            dao.FichaBibliograficaDao fichaDao = new dao.FichaBibliograficaDao();
 
-        // Simulación de ISBNs existentes (para pruebas)
-        if (isbn.equals("978-1234567890") || isbn.equals("978-0987654321")) {
-            throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema (simulación)");
+            // Buscar si existe alguna ficha con este ISBN
+            List<FichaBibliografica> todasLasFichas = fichaDao.leerTodos();
+            for (FichaBibliografica ficha : todasLasFichas) {
+                if (isbn.equals(ficha.getIsbn())) {
+                    throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema");
+                }
+            }
+
+            System.out.println("ISBN único validado: " + isbn);
+
+        } catch (Exception e) {
+            // Si es error de unicidad, relanzar, sino error genérico
+            if (e.getMessage().contains("ya existe")) {
+                throw e;
+            }
+            throw new Exception("Error al validar ISBN único: " + e.getMessage());
         }
-
-        System.out.println("ISBN único validado: " + isbn);
     }
 
     /**

@@ -23,7 +23,7 @@ public class LibroServiceImpl implements LibroService {
         this.fichaDAO = new FichaBibliograficaDao();
     }
 
-    // SETTERS para inyección de dependencias
+    // SETTERS para inyección de dependencias (Flexibilidad)
     public void setLibroDAO(LibroDao libroDAO) {
         this.libroDAO = libroDAO;
     }
@@ -35,7 +35,6 @@ public class LibroServiceImpl implements LibroService {
     public void setFichaService(FichaBibliograficaService fichaService) {
         this.fichaService = fichaService;
     }
-
 
     // --- MÉTODOS HEREDADOS DE GenericService ---
 
@@ -58,19 +57,17 @@ public class LibroServiceImpl implements LibroService {
         ValidacionService.validarLibro(libro);
         System.out.println("Actualizando libro: " + libro.getTitulo());
 
-        // LLAMADA AL DAO DE SANDRA
-        //libroDAO.actualizar(libro);
+        libroDAO.actualizar(libro);
 
         System.out.println("Libro actualizado correctamente - ID: " + libro.getId());
     }
 
     @Override
     public void eliminar(Long id) throws Exception {
-        ValidacionService.validarId(id, "libro"); // ← NUEVA VALIDACIÓN
-        System.out.println("🗑️ Eliminando libro ID: " + id);
+        ValidacionService.validarId(id, "libro");
+        System.out.println("🗑Eliminando libro ID: " + id);
 
-        // LLAMADA AL DAO DE SANDRA
-        // libroDAO.eliminar(id);
+        libroDAO.eliminar(id);
 
         System.out.println("Libro eliminado correctamente ID: " + id);
     }
@@ -78,7 +75,7 @@ public class LibroServiceImpl implements LibroService {
     @Override
     public Libro buscarPorId(Long id) throws Exception {
         ValidacionService.validarId(id, "libro");
-        System.out.println("🔍 Buscando libro por ID: " + id);
+        System.out.println("Buscando libro por ID: " + id);
 
 
         Libro libro = libroDAO.leer(id);
@@ -87,18 +84,18 @@ public class LibroServiceImpl implements LibroService {
             throw new Exception("No se encontró libro con ID: " + id);
         }
 
-        System.out.println("✅ Libro encontrado: " + libro.getTitulo());
+        System.out.println("Libro encontrado: " + libro.getTitulo());
         return libro;
     }
 
     @Override
     public List<Libro> listarTodos() throws Exception {
-        System.out.println("📚 Listando todos los libros");
+        System.out.println("Listando todos los libros");
 
-        // USA el DAO de Julian que ya incluye las fichas
-        List<Libro> libros = libroDAO.leerTodos();  // ← Ya trae libros + fichas!
 
-        System.out.println("✅ " + libros.size() + " libros encontrados");
+        List<Libro> libros = libroDAO.leerTodos();
+
+        System.out.println(" " + libros.size() + " libros encontrados");
         return libros;
     }
 
@@ -185,7 +182,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
-        System.out.println("🚀 INICIANDO TRANSACCIÓN: Crear Libro con Ficha");
+        System.out.println("INICIANDO TRANSACCIÓN: Crear Libro con Ficha");
 
         // Validaciones
         ValidacionService.validarLibro(libro);
@@ -217,18 +214,18 @@ public class LibroServiceImpl implements LibroService {
 
             // 6. CONFIRMAR TRANSACCIÓN
             conn.commit();
-            System.out.println("   ✅ TRANSACCIÓN EXITOSA - Commit realizado");
+            System.out.println("   TRANSACCIÓN EXITOSA - Commit realizado");
             operacionExitosa = true;
 
-            System.out.println("🎉 Libro creado con ID: " + libro.getId());
-            System.out.println("🎉 Ficha creada con ISBN: " + ficha.getIsbn());
+            System.out.println("Libro creado con ID: " + libro.getId());
+            System.out.println("Ficha creada con ISBN: " + ficha.getIsbn());
 
         } catch (Exception error) {
             // 7. REVERTIR EN CASO DE ERROR
-            System.out.println("   ❌ ERROR en transacción: " + error.getMessage());
+            System.out.println("   ERROR en transacción: " + error.getMessage());
             if (conn != null) {
                 conn.rollback();
-                System.out.println("   🔄 Rollback ejecutado");
+                System.out.println("   Rollback ejecutado");
             }
             throw new Exception("Error al crear libro con ficha: " + error.getMessage(), error);
 
@@ -239,11 +236,11 @@ public class LibroServiceImpl implements LibroService {
                     conn.setAutoCommit(true);
                     conn.close();
                 } catch (SQLException e) {
-                    System.err.println("   ⚠️ Error al cerrar conexión: " + e.getMessage());
+                    System.err.println("   Error al cerrar conexión: " + e.getMessage());
                 }
             }
 
-            System.out.println(operacionExitosa ? "🏁 TRANSACCIÓN EXITOSA" : "💥 TRANSACCIÓN FALLIDA");
+            System.out.println(operacionExitosa ? "🏁 TRANSACCIÓN EXITOSA" : "TRANSACCIÓN FALLIDA");
         }
     }
 

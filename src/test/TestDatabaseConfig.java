@@ -7,7 +7,7 @@ import java.sql.DatabaseMetaData;
 public class TestDatabaseConfig {
     public static void main(String[] args) {
         try {
-            System.out.println("🔧 INICIANDO PRUEBA DE CONFIGURACIÓN BD");
+            System.out.println("INICIANDO PRUEBA DE CONFIGURACIÓN BD");
             System.out.println("========================================");
 
             // 1. Probar que db.properties se carga y conexión funciona

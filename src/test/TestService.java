@@ -1,4 +1,4 @@
-package main;
+package test;
 
 import entities.Libro;
 import entities.FichaBibliografica;

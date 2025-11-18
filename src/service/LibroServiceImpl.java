@@ -4,7 +4,11 @@ import entities.Libro;
 import entities.FichaBibliografica;
 import service.validations.ValidacionService;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import dao.LibroDao;
+import dao.FichaBibliograficaDao;
+import config.DatabaseConnection;
 
 public class LibroServiceImpl implements LibroService {
 
@@ -13,7 +17,7 @@ public class LibroServiceImpl implements LibroService {
     private LibroDao libroDAO;
     private FichaBibliograficaDao fichaDAO;
 
-    // Constructor
+    // Constructor con inicialización de DAOs
     public LibroServiceImpl() {
         this.libroDAO = new LibroDao();
         this.fichaDAO = new FichaBibliograficaDao();
@@ -197,15 +201,15 @@ public class LibroServiceImpl implements LibroService {
             conn.setAutoCommit(false);
 
             // 2. CREAR LIBRO (con el DAO de Julian)
-            System.out.println("   📗 Insertando libro...");
+            System.out.println("   Insertando libro...");
             libroDAO.crear(libro, conn);  // ← Julian actualiza el ID automáticamente
 
             // 3. ASIGNAR MISMO ID A FICHA (PK Compartida)
             ficha.setId(libro.getId());  // ← Toma el ID generado para el libro
-            System.out.println("   🔗 Asignando mismo ID a ficha: " + libro.getId());
+            System.out.println("   Asignando mismo ID a ficha: " + libro.getId());
 
             // 4. CREAR FICHA (con el DAO de Julian)
-            System.out.println("   📄 Insertando ficha bibliográfica...");
+            System.out.println("   nsertando ficha bibliográfica...");
             fichaDAO.crear(ficha, conn);
 
             // 5. ESTABLECER RELACIÓN EN MEMORIA

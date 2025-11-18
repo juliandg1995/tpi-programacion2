@@ -2,57 +2,57 @@ package service;
 
 import entities.Libro;
 import entities.FichaBibliografica;
+import dao.*;
 import service.validations.ValidacionService;
 import java.sql.Connection;
 import java.util.List;
 
 public class LibroServiceImpl implements LibroService {
 
-   // private LibroDao libroDAO;                    //  DAO concreto de Sandra
-   // private FichaBibliograficaDao fichaDAO;       //  DAO concreto de Julián
+    private LibroDao libroDAO;
+    private FichaBibliograficaDao fichaDAO;
+
     private FichaBibliograficaService fichaService;
 
-
-    public LibroServiceImpl() {}
+    public LibroServiceImpl() {
+    }
 
     public LibroServiceImpl(FichaBibliograficaService fichaService) {
         this.fichaService = fichaService;
     }
 
     // Constructor para inyección de dependencias
-//    public LibroServiceImpl(LibroDao libroDao, FichaBibliograficaService fichaService) {
-//        this.libroDao = libroDao;
-//        this.fichaService = fichaService;
-//    }
-
+    public LibroServiceImpl(LibroDao libroDao, FichaBibliograficaService fichaService) {
+        this.libroDAO = new LibroDao();
+        this.fichaDAO = new FichaBibliograficaDao();
+        this.fichaService = fichaService;
+    }
+    
+    
     // SETTERS para inyección de dependencias
-//    public void setLibroDAO(LibroDao libroDAO) {
-//        this.libroDAO = libroDAO;
-//    }
-
-//    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
-//        this.fichaDAO = fichaDAO;
-//    }
-
     public void setFichaService(FichaBibliograficaService fichaService) {
         this.fichaService = fichaService;
     }
 
-
     // --- MÉTODOS HEREDADOS DE GenericService ---
 
     @Override
-    public Libro crear(Libro libro) throws Exception {
-        ValidacionService.validarLibro(libro);
-        System.out.println("Creando libro: " + libro.getTitulo());
+    public void crear(Libro libro) throws Exception {
+        try {
+            ValidacionService.validarLibro(libro);
+            System.out.println("Creando libro: " + libro.getTitulo());
 
-        // LLAMADA AL DAO DE SANDRA
-        //Libro libroCreado = libroDAO.crear(libro);
+            libroDAO.crear(libro);
 
-        //System.out.println("Libro creado correctamente - ID: " + libroCreado.getId());
-        //return libroCreado;
+        } catch (Exception e) {
 
-        return null; // Temporal
+            // LLAMADA AL DAO DE SANDRA
+            //Libro libroCreado = libroDAO.crear(libro);
+            //System.out.println("Libro creado correctamente - ID: " + libroCreado.getId());
+            //return libroCreado;
+            throw new Exception("Error al insertar el libro", e);
+
+        }
     }
 
     @Override
@@ -62,7 +62,6 @@ public class LibroServiceImpl implements LibroService {
 
         // LLAMADA AL DAO DE SANDRA
         //libroDAO.actualizar(libro);
-
         System.out.println("Libro actualizado correctamente - ID: " + libro.getId());
     }
 
@@ -73,7 +72,6 @@ public class LibroServiceImpl implements LibroService {
 
         // LLAMADA AL DAO DE SANDRA
         // libroDAO.eliminar(id);
-
         System.out.println("Libro eliminado correctamente ID: " + id);
     }
 
@@ -84,15 +82,12 @@ public class LibroServiceImpl implements LibroService {
         System.out.println("Buscando libro por ID: " + id);
 
         // LLAMADA AL DAO DE SANDRA (con JOIN automático)
-       //Libro libro = libroDAO.leer(id);
-
+        //Libro libro = libroDAO.leer(id);
 //        if (libro == null) {
 //            throw new Exception("No se encontró libro con ID: " + id);
 //        }
-
         //System.out.println("Libro encontrado - ID: " + id + ", Título: " + libro.getTitulo());
         //return libro;
-
         return null; // Temporal
     }
 
@@ -102,15 +97,12 @@ public class LibroServiceImpl implements LibroService {
 
         // LLAMADA AL DAO DE SANDRA (con JOIN automático)
         //List<Libro> libros = libroDAO.leerTodos();
-
         //System.out.println("Listado completado - " + libros.size() + " libros encontrados");
         //return libros;
-
         return null; //Temporal
     }
 
     // --- MÉTODOS ESPECÍFICOS DE LibroService ---
-
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
         System.out.println("INICIANDO TRANSACCIÓN: Crear Libro con Ficha Bibliográfica");
@@ -190,7 +182,7 @@ public class LibroServiceImpl implements LibroService {
         }
     }
 
-/*
+    /*
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
         validarLibro(libro);
@@ -256,8 +248,6 @@ public class LibroServiceImpl implements LibroService {
             }
         }
     }*/
-
-
     @Override
     public void asignarFichaBibliografica(Long idLibro, FichaBibliografica ficha) throws Exception {
         if (idLibro == null || idLibro <= 0) {
@@ -279,15 +269,12 @@ public class LibroServiceImpl implements LibroService {
         // if (libroExistente == null) {
         //     throw new Exception("Libro con ID " + idLibro + " no encontrado");
         // }
-
         // 2. Validar ISBN único
         // fichaService.validarIsbnUnico(ficha.getIsbn());
-
         // 3. Crear ficha y asignar
         // FichaBibliografica fichaCreada = fichaDAO.crear(ficha);
         // libroExistente.setFichaBibliografica(fichaCreada);
         // libroDAO.actualizar(libroExistente);
-
         System.out.println("Ficha asignada exitosamente al libro ID: " + idLibro);
     }
 
@@ -301,7 +288,6 @@ public class LibroServiceImpl implements LibroService {
 
         // SIMULACIÓN TEMPORAL - cuando el DAO esté listo:
         // return libroDAO.buscarPorTitulo(titulo);
-
         // Simulación con datos de prueba:
         if (titulo.equalsIgnoreCase("Cien años de soledad")) {
             Libro libroSimulado = new Libro();

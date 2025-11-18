@@ -8,31 +8,25 @@ import java.util.List;
 
 public class LibroServiceImpl implements LibroService {
 
-   // private LibroDao libroDAO;                    //  DAO concreto de Sandra
-   // private FichaBibliograficaDao fichaDAO;       //  DAO concreto de Julián
+
     private FichaBibliograficaService fichaService;
+    private LibroDao libroDAO;
+    private FichaBibliograficaDao fichaDAO;
 
-
-    public LibroServiceImpl() {}
-
-    public LibroServiceImpl(FichaBibliograficaService fichaService) {
-        this.fichaService = fichaService;
+    // Constructor
+    public LibroServiceImpl() {
+        this.libroDAO = new LibroDao();
+        this.fichaDAO = new FichaBibliograficaDao();
     }
 
-    // Constructor para inyección de dependencias
-//    public LibroServiceImpl(LibroDao libroDao, FichaBibliograficaService fichaService) {
-//        this.libroDao = libroDao;
-//        this.fichaService = fichaService;
-//    }
-
     // SETTERS para inyección de dependencias
-//    public void setLibroDAO(LibroDao libroDAO) {
-//        this.libroDAO = libroDAO;
-//    }
+    public void setLibroDAO(LibroDao libroDAO) {
+        this.libroDAO = libroDAO;
+    }
 
-//    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
-//        this.fichaDAO = fichaDAO;
-//    }
+    public void setFichaDAO(FichaBibliograficaDao fichaDAO) {
+        this.fichaDAO = fichaDAO;
+    }
 
     public void setFichaService(FichaBibliograficaService fichaService) {
         this.fichaService = fichaService;
@@ -80,38 +74,33 @@ public class LibroServiceImpl implements LibroService {
     @Override
     public Libro buscarPorId(Long id) throws Exception {
         ValidacionService.validarId(id, "libro");
+        System.out.println("🔍 Buscando libro por ID: " + id);
 
-        System.out.println("Buscando libro por ID: " + id);
 
-        // LLAMADA AL DAO DE SANDRA (con JOIN automático)
-       //Libro libro = libroDAO.leer(id);
+        Libro libro = libroDAO.leer(id);
 
-//        if (libro == null) {
-//            throw new Exception("No se encontró libro con ID: " + id);
-//        }
+        if (libro == null) {
+            throw new Exception("No se encontró libro con ID: " + id);
+        }
 
-        //System.out.println("Libro encontrado - ID: " + id + ", Título: " + libro.getTitulo());
-        //return libro;
-
-        return null; // Temporal
+        System.out.println("✅ Libro encontrado: " + libro.getTitulo());
+        return libro;
     }
 
     @Override
     public List<Libro> listarTodos() throws Exception {
-        System.out.println("Listando todos los libros");
+        System.out.println("📚 Listando todos los libros");
 
-        // LLAMADA AL DAO DE SANDRA (con JOIN automático)
-        //List<Libro> libros = libroDAO.leerTodos();
+        // USA el DAO de Julian que ya incluye las fichas
+        List<Libro> libros = libroDAO.leerTodos();  // ← Ya trae libros + fichas!
 
-        //System.out.println("Listado completado - " + libros.size() + " libros encontrados");
-        //return libros;
-
-        return null; //Temporal
+        System.out.println("✅ " + libros.size() + " libros encontrados");
+        return libros;
     }
 
     // --- MÉTODOS ESPECÍFICOS DE LibroService ---
 
-    @Override
+    /*@Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
         System.out.println("INICIANDO TRANSACCIÓN: Crear Libro con Ficha Bibliográfica");
 
@@ -188,74 +177,71 @@ public class LibroServiceImpl implements LibroService {
                 System.out.println("TRANSACCIÓN COMPLETADA - Estado: FALLIDA");
             }
         }
-    }
+    }*/
 
-/*
     @Override
     public void crearLibroConFicha(Libro libro, FichaBibliografica ficha) throws Exception {
-        validarLibro(libro);
-        if (ficha == null) {
-            throw new IllegalArgumentException("La ficha bibliográfica no puede ser nula");
-        }
+        System.out.println("🚀 INICIANDO TRANSACCIÓN: Crear Libro con Ficha");
 
-        // VALIDACIONES REALES
-        fichaService.validarFichaBibliografica(ficha);
-        fichaService.validarIsbnUnico(ficha.getIsbn());
-
-        System.out.println("Transacción - Crear libro '" + libro.getTitulo() + "' con ISBN: " + ficha.getIsbn());
+        // Validaciones
+        ValidacionService.validarLibro(libro);
+        ValidacionService.validarFichaBibliografica(ficha);
+        // ValidacionService.validarIsbnUnico(ficha.getIsbn()); // ← Temporalmente comentado
 
         Connection conn = null;
         boolean operacionExitosa = false;
 
         try {
-            // CONEXIÓN (cuando esté DatabaseConnection)
-            // conn = config.DatabaseConnection.getConnection();
-            // conn.setAutoCommit(false);
+            // 1. OBTENER CONEXIÓN
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
 
-            System.out.println("  Conexión establecida");
+            // 2. CREAR LIBRO (con el DAO de Julian)
+            System.out.println("   📗 Insertando libro...");
+            libroDAO.crear(libro, conn);  // ← Julian actualiza el ID automáticamente
 
-            // 1. CREAR LIBRO (Sandra)
-            System.out.println("   Insertando libro...");
-            // Libro libroCreado = libroDAO.crear(libro, conn);
-            Libro libroCreado = libroDAO.crear(libro); // Temporal sin transacción
+            // 3. ASIGNAR MISMO ID A FICHA (PK Compartida)
+            ficha.setId(libro.getId());  // ← Toma el ID generado para el libro
+            System.out.println("   🔗 Asignando mismo ID a ficha: " + libro.getId());
 
-            // 2. ASIGNAR MISMO ID A FICHA (PK compartida - Julián)
-            System.out.println("   Insertando ficha...");
-            ficha.setId(libroCreado.getId());
-            // fichaDAO.crear(ficha, conn); // Temporal sin transacción
-            fichaDAO.crear(ficha);
+            // 4. CREAR FICHA (con el DAO de Julian)
+            System.out.println("   📄 Insertando ficha bibliográfica...");
+            fichaDAO.crear(ficha, conn);
 
-            // 3. CONFIRMAR TRANSACCIÓN
-            // conn.commit();
-            System.out.println("   TRANSACCIÓN EXITOSA");
+            // 5. ESTABLECER RELACIÓN EN MEMORIA
+            libro.setFichaBibliografica(ficha);
+
+            // 6. CONFIRMAR TRANSACCIÓN
+            conn.commit();
+            System.out.println("   ✅ TRANSACCIÓN EXITOSA - Commit realizado");
             operacionExitosa = true;
 
-            System.out.println("Libro creado con ID: " + libroCreado.getId());
-            System.out.println("Ficha creada con ISBN: " + ficha.getIsbn());
+            System.out.println("🎉 Libro creado con ID: " + libro.getId());
+            System.out.println("🎉 Ficha creada con ISBN: " + ficha.getIsbn());
 
         } catch (Exception error) {
-            // 4. REVERTIR EN CASO DE ERROR
-            System.out.println("   ERROR en transacción: " + error.getMessage());
-            // if (conn != null) conn.rollback();
-            System.out.println("   Rollback ejecutado");
-
+            // 7. REVERTIR EN CASO DE ERROR
+            System.out.println("   ❌ ERROR en transacción: " + error.getMessage());
+            if (conn != null) {
+                conn.rollback();
+                System.out.println("   🔄 Rollback ejecutado");
+            }
             throw new Exception("Error al crear libro con ficha: " + error.getMessage(), error);
 
         } finally {
-            // 5. LIMPIAR RECURSOS
-            // if (conn != null) {
-            //     conn.setAutoCommit(true);
-            //     conn.close();
-            // }
-            System.out.println("   Recursos liberados");
-
-            if (operacionExitosa) {
-                System.out.println("TRANSACCIÓN COMPLETADA - Estado: ÉXITO");
-            } else {
-                System.out.println("TRANSACCIÓN COMPLETADA - Estado: FALLIDA");
+            // 8. LIMPIAR RECURSOS
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("   ⚠️ Error al cerrar conexión: " + e.getMessage());
+                }
             }
+
+            System.out.println(operacionExitosa ? "🏁 TRANSACCIÓN EXITOSA" : "💥 TRANSACCIÓN FALLIDA");
         }
-    }*/
+    }
 
 
     @Override

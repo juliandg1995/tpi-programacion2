@@ -90,12 +90,12 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     public List<Libro> listarTodos() throws Exception {
-        System.out.println("Listando todos los libros");
+        System.out.println("Listando todos los libros\n");
 
 
         List<Libro> libros = libroDAO.leerTodos();
 
-        System.out.println(" " + libros.size() + " libros encontrados");
+        System.out.println(" " + libros.size() + " libros encontrados\n\n");
         return libros;
     }
 

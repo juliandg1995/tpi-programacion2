@@ -2,7 +2,6 @@ package service;
 
 import entities.FichaBibliografica;
 import dao.FichaBibliograficaDao;
-import java.sql.Connection;
 import java.util.List;
 import service.validations.ValidacionService;
 
@@ -24,7 +23,7 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
     @Override
     public FichaBibliografica crear(FichaBibliografica ficha) throws Exception {
         ValidacionService.validarFichaBibliografica(ficha);
-        validarIsbnUnico(ficha.getIsbn());
+        ValidacionService.validarIsbnUnico(ficha.getIsbn());
 
         System.out.println("Creando ficha bibliográfica - ISBN: " + ficha.getIsbn());
 
@@ -74,7 +73,7 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
         ValidacionService.validarId(id, "ficha bibliográfica");
         System.out.println("Buscando ficha por ID: " + id);
 
-        // LLAMADA REAL AL DAO DE JULIÁN
+        // LLAMADA AL DAO
         FichaBibliografica ficha = fichaDAO.leer(id);
 
         if (ficha == null) {
@@ -122,22 +121,5 @@ public class FichaBibliograficaServiceImpl implements FichaBibliograficaService 
 
         System.out.println("Ficha NO encontrada: " + isbn);
         return null;
-    }
-
-    @Override
-    public void validarIsbnUnico(String isbn) throws Exception {
-        if (isbn == null || isbn.trim().isEmpty()) {
-            throw new IllegalArgumentException("El ISBN no puede estar vacío");
-        }
-
-        System.out.println("Validando ISBN único: " + isbn);
-
-        // VERIFICACIÓN REAL CON LA BASE DE DATOS
-        FichaBibliografica existente = buscarPorIsbn(isbn);
-        if (existente != null) {
-            throw new Exception("El ISBN '" + isbn + "' ya existe en el sistema");
-        }
-
-        System.out.println("ISBN único y válido: " + isbn);
     }
 }

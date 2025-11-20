@@ -124,6 +124,8 @@ public class ValidacionService {
 
         System.out.println("Validando unicidad de ISBN: " + isbn);
 
+        // COMENTAR TEMPORALMENTE LA VALIDACIÓN INEFICIENTE
+        /*
         try {
             dao.FichaBibliograficaDao fichaDao = new dao.FichaBibliograficaDao();
 
@@ -144,6 +146,7 @@ public class ValidacionService {
             }
             throw new Exception("Error al validar ISBN único: " + e.getMessage());
         }
+        */
     }
 
     /**

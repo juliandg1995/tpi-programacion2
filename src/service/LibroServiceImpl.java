@@ -43,13 +43,9 @@ public class LibroServiceImpl implements LibroService {
         ValidacionService.validarLibro(libro);
         System.out.println("Creando libro: " + libro.getTitulo());
 
-        // LLAMADA AL DAO DE SANDRA
-        //Libro libroCreado = libroDAO.crear(libro);
-
-        //System.out.println("Libro creado correctamente - ID: " + libroCreado.getId());
-        //return libroCreado;
-
-        return null; // Temporal
+        libroDAO.crear(libro);
+        System.out.println("Libro creado correctamente - ID: " + libro.getId());
+        return libro;
     }
 
     @Override
@@ -127,7 +123,7 @@ public class LibroServiceImpl implements LibroService {
             System.out.println("   Asignando mismo ID a ficha: " + libro.getId());
 
             // 4. CREAR FICHA (con el DAO de Julian)
-            System.out.println("   nsertando ficha bibliográfica...");
+            System.out.println("   Insertando ficha bibliográfica...");
             fichaDAO.crear(ficha, conn);
 
             // 5. ESTABLECER RELACIÓN EN MEMORIA

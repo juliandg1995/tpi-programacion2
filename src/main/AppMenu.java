@@ -8,11 +8,12 @@ import java.util.Scanner;
 import java.util.List;
 
 /**
- * Menú principal de consola para el Sistema de Gestión de Biblioteca
- * Implementa las operaciones CRUD completas para Libro y FichaBibliografica
- * con manejo robusto de errores y validaciones de entrada
+ * Menú principal de consola para el Sistema de Gestión de Biblioteca Implementa
+ * las operaciones CRUD completas para Libro y FichaBibliografica con manejo
+ * robusto de errores y validaciones de entrada
  */
 public class AppMenu {
+
     private LibroService libroService;
     private Scanner scanner;
 
@@ -22,8 +23,8 @@ public class AppMenu {
     }
 
     /**
-     * Punto de entrada principal del menú
-     * Controla el ciclo de vida de la aplicación
+     * Punto de entrada principal del menú Controla el ciclo de vida de la
+     * aplicación
      */
     public void iniciar() {
         System.out.println("SISTEMA DE GESTIÓN BIBLIOTECARIA - TFI Programación 2");
@@ -32,8 +33,8 @@ public class AppMenu {
     }
 
     /**
-     * Menú principal con todas las operaciones CRUD
-     * Basado en las especificaciones del trabajo práctico integrador
+     * Menú principal con todas las operaciones CRUD Basado en las
+     * especificaciones del trabajo práctico integrador
      */
     private void mostrarMenuPrincipal() {
         while (true) {
@@ -84,11 +85,10 @@ public class AppMenu {
     // =========================================================================
     // MÉTODOS PRINCIPALES DE OPERACIONES CRUD
     // =========================================================================
-
     /**
-     * Operación 1: Crear Libro con Ficha Bibliográfica
-     * Implementa transacción atómica (todo o nada)
-     * Con validación de ISBN único y manejo de errores robusto
+     * Operación 1: Crear Libro con Ficha Bibliográfica Implementa transacción
+     * atómica (todo o nada) Con validación de ISBN único y manejo de errores
+     * robusto
      */
     private void crearLibroConFicha() {
         System.out.println("\nCREAR NUEVO LIBRO CON FICHA BIBLIOGRÁFICA");
@@ -188,8 +188,7 @@ public class AppMenu {
     }
 
     /**
-     * Operación 2: Buscar Libro por ID
-     * Con manejo de ID inexistente
+     * Operación 2: Buscar Libro por ID Con manejo de ID inexistente
      */
     private void buscarLibroPorId() {
         System.out.println("\nBUSCAR LIBRO POR ID");
@@ -199,19 +198,64 @@ public class AppMenu {
     }
 
     /**
-     * Operación 3: Listar Todos los Libros
-     * Muestra formato tabular amigable
+     * Clase helper: Recorta una cadena a un largo máximo para que la tabla no se desarme.
+     */
+    private String recortar(String texto, int max) {
+        if (texto == null) {
+            return "-";
+        }
+        return texto.length() > max ? texto.substring(0, max - 3) + "..." : texto;
+    }
+
+    /**
+     * Operación 3: Listar Todos los Libros Muestra formato tabla 
      */
     private void listarTodosLibros() {
         System.out.println("\nLISTADO COMPLETO DE LIBROS");
         System.out.println("----------------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            // Llamamos a la capa service
+            List<Libro> libros = libroService.listarTodos();
+
+            if (libros == null || libros.isEmpty()) {
+                System.out.println("No hay libros cargados en el sistema.");
+            } else {
+                // Encabezado de tabla
+                System.out.printf("%-5s %-30s %-25s %-20s %-6s %-17s%n",
+                        "ID", "TÍTULO", "AUTOR", "EDITORIAL", "AÑO", "ISBN");
+
+                System.out.println("------------------------------------------------------------------------------------------");
+
+                for (Libro libro : libros) {
+                    FichaBibliografica ficha = libro.getFichaBibliografica();
+                    String isbn = (ficha != null && ficha.getIsbn() != null)
+                            ? ficha.getIsbn()
+                            : "-";
+
+                    String editorial = libro.getEditorial() != null ? libro.getEditorial() : "-";
+                    String anio = libro.getAnioEdicion() != null ? libro.getAnioEdicion().toString() : "-";
+
+                    System.out.printf("%-5d %-30s %-25s %-20s %-6s %-17s%n",
+                            libro.getId(),
+                            recortar(libro.getTitulo(), 30),
+                            recortar(libro.getAutor(), 25),
+                            recortar(editorial, 20),
+                            anio,
+                            isbn);
+                }
+            }
+
+        } catch (Exception e) {
+            manejarError(e, "listar todos los libros");
+        } finally {
+            pausar("");
+        }
     }
 
     /**
-     * Operación 4: Actualizar Libro existente
-     * Permite actualización parcial (mantener valores actuales)
+     * Operación 4: Actualizar Libro existente Permite actualización parcial
+     * (mantener valores actuales)
      */
     private void actualizarLibro() {
         System.out.println("\nACTUALIZAR LIBRO");
@@ -221,8 +265,8 @@ public class AppMenu {
     }
 
     /**
-     * Operación 5: Eliminación Lógica de Libro
-     * No elimina físicamente, marca como eliminado
+     * Operación 5: Eliminación Lógica de Libro No elimina físicamente, marca
+     * como eliminado
      */
     private void eliminarLibro() {
         System.out.println("\nELIMINAR LIBRO (LÓGICO)");
@@ -232,8 +276,8 @@ public class AppMenu {
     }
 
     /**
-     * Operación 6: Búsqueda por ISBN (campo relevante)
-     * Búsqueda exacta por ISBN único
+     * Operación 6: Búsqueda por ISBN (campo relevante) Búsqueda exacta por ISBN
+     * único
      */
     private void buscarPorIsbn() {
         System.out.println("\nBUSCAR POR ISBN");
@@ -243,8 +287,8 @@ public class AppMenu {
     }
 
     /**
-     * Operación 7: Búsqueda por Título
-     * Búsqueda flexible con coincidencias parciales
+     * Operación 7: Búsqueda por Título Búsqueda flexible con coincidencias
+     * parciales
      */
     private void buscarPorTitulo() {
         System.out.println("\nBUSCAR POR TÍTULO");
@@ -256,9 +300,9 @@ public class AppMenu {
     // =========================================================================
     // MÉTODOS AUXILIARES PARA MANEJO DE ENTRADAS
     // =========================================================================
-
     /**
      * Lee una cadena de texto con opción de conversión a mayúsculas
+     *
      * @param mensaje Mensaje a mostrar al usuario
      * @param convertirMayusculas true para convertir a mayúsculas
      * @return Cadena ingresada por el usuario
@@ -274,6 +318,7 @@ public class AppMenu {
 
     /**
      * Lee y valida un ID numérico
+     *
      * @param mensaje Mensaje a mostrar al usuario
      * @return ID válido o null si se ingresa vacío
      */
@@ -298,6 +343,7 @@ public class AppMenu {
 
     /**
      * Manejo centralizado de errores con mensajes específicos
+     *
      * @param e Excepción ocurrida
      * @param operacion Nombre de la operación que falló
      */
@@ -321,6 +367,7 @@ public class AppMenu {
 
     /**
      * Pausa la ejecución hasta que el usuario presione Enter
+     *
      * @param mensaje Mensaje a mostrar antes de la pausa
      */
     private void pausar(String mensaje) {

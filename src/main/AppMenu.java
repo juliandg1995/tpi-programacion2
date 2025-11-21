@@ -197,8 +197,48 @@ public class AppMenu {
     private void buscarLibroPorId() {
         System.out.println("\nBUSCAR LIBRO POR ID");
         System.out.println("----------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            Long id = leerId("Ingrese el ID del libro: ");
+            if (id == null) {
+                System.out.println("Operación cancelada: No se ingresó un ID.");
+                return;
+            }
+
+            // Buscar libro usando la capa service
+            Libro libro = libroService.buscarPorId(id);
+
+            // Mostrar resultado
+            System.out.println("\nLIBRO ENCONTRADO:");
+            System.out.println("------------------");
+            System.out.println("ID: " + libro.getId());
+            System.out.println("Título: " + libro.getTitulo());
+            System.out.println("Autor: " + libro.getAutor());
+            System.out.println("Editorial: " + (libro.getEditorial() != null ? libro.getEditorial() : "No especificada"));
+            System.out.println("Año Edición: " + (libro.getAnioEdicion() != null ? libro.getAnioEdicion() : "No especificado"));
+            System.out.println("Eliminado: " + (libro.getEliminado() ? "Sí" : "No"));
+
+            // Mostrar ficha bibliográfica asociada
+            FichaBibliografica ficha = libro.getFichaBibliografica();
+            if (ficha != null) {
+                System.out.println("\nFICHA BIBLIOGRÁFICA:");
+                System.out.println("---------------------");
+                System.out.println("ISBN: " + ficha.getIsbn());
+                System.out.println("Clasificación Dewey: "
+                        + (ficha.getClasificacionDewey() != null ? ficha.getClasificacionDewey() : "No especificada"));
+                System.out.println("Estantería: "
+                        + (ficha.getEstanteria() != null ? ficha.getEstanteria() : "No especificada"));
+                System.out.println("Idioma: "
+                        + (ficha.getIdioma() != null ? ficha.getIdioma() : "No especificado"));
+            } else {
+                System.out.println("\nNo existe ficha bibliográfica asociada.");
+            }
+
+        } catch (Exception e) {
+            manejarError(e, "buscar libro por ID");
+        } finally {
+            pausar("");
+        }
     }
 
     /**
@@ -537,6 +577,7 @@ public class AppMenu {
 
     /**
      * Pausa la ejecución hasta que el usuario presione Enter
+     *
      * @param mensaje Mensaje a mostrar antes de la pausa
      */
     private void pausar(String mensaje) {

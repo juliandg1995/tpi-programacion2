@@ -1,5 +1,5 @@
-# 📚 **Sistema de Gestión de Biblioteca**  
-### **Trabajo Práctico Integrador – Programación II**  
+# 📚 **Sistema de Gestión de Biblioteca**
+### **Trabajo Práctico Integrador – Programación II**
 **Proyecto:** _TPI-Grupo85-FichaBibliografica_
 
 🔗 **Video explicativo:**  
@@ -24,16 +24,17 @@ Incluye:
 ## 2. ⚙️ Requisitos Previos
 
 **Software necesario:**
-- **Java 21** (recomendado por la cátedra)  
-- **MySQL 8.x**  
+- **Java 21**
+- **MySQL 8.x**
 - IDE sugerido: **IntelliJ / NetBeans / Eclipse**
 
-**Archivo de configuración** `db.properties` (ubicado en `src/main/resources`):
+**Archivo de configuración `db.properties`:**
 
+```
 db.url=jdbc:mysql://localhost:3306/biblioteca_tpi
 db.user=root
 db.password=
-
+```
 
 ---
 
@@ -68,11 +69,13 @@ CREATE TABLE ficha_bibliografica (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
-
 ```
 
-🏗 4. Arquitectura del Proyecto
+---
 
+## 4. 🧱 Arquitectura del Proyecto
+
+```text
 TPI-Grupo85-FichaBibliografica/
 ├─ src/
 │  ├─ config/
@@ -114,76 +117,64 @@ TPI-Grupo85-FichaBibliografica/
       ├─ TestService.java
       ├─ TestSinDependenciasCirculares.java
       └─ TestTransaccionSimple.java
+```
 
-⚙️ 5. Funcionalidades del Sistema
+---
 
-Crear Libro junto con su Ficha Bibliográfica en una transacción atómica.
+## 5. 🧩 Funcionalidades del Sistema
 
-Listar todos los libros con sus fichas (si existen).
+- Crear Libro junto con su Ficha Bibliográfica mediante transacción atómica.
+- Listar todos los libros con sus fichas (si existen).
+- Buscar libro por ID.
+- Actualizar libro.
+- Eliminación lógica del libro.
+- Búsqueda por ISBN.
+- Búsqueda por título.
 
-Buscar libro por ID.
+---
 
-Actualizar libro.
+## 6. 👥 Equipo de Trabajo (Roles)
 
-Eliminación lógica de libro.
+**Sandra Débora Martínez**  
+- Entidades Libro y FichaBibliografica  
+- Presentación teórica del módulo DAO  
 
-Búsqueda por ISBN.
+**Melisa Inés Martellini**  
+- Diagrama UML  
+- Scripts SQL (CREATE TABLE, FK, UNIQUE, relación 1→1)  
+- Implementación de DatabaseConnection  
 
-Búsqueda por título.
+**Fabricio Nicolás Puccio**  
+- Implementación de la capa Service  
+- Manejo de transacciones  
+- Lógica de negocio  
 
+**Julián Daniel Gómez**  
+- Implementación completa del módulo DAO  
+- Desarrollo del AppMenu  
+- Pruebas y validaciones finales  
 
-👥 6. Equipo de Trabajo (Roles)
+---
 
-👩 Sandra Débora Martínez
+## 7. ▶️ Ejecución
 
-- Implementación de entidades Libro y FichaBibliografica
+Desde el IDE ejecutar:
 
-- Presentación teórica del módulo DAO
-
-👩 Melisa Inés Martellini
-
-- Diseño del Diagrama UML
-
-- Scripts SQL (CREATE TABLE, FK, UNIQUE, relación 1→1)
-
-- Implementación de DatabaseConnection
-
-👨 Fabricio Nicolás Puccio
-
-- Implementación de la capa Service
-
-- Manejo de transacciones en LibroServiceImpl
-
-- Lógica de negocio
-
-👨 Julián Daniel Gómez
-
-- Implementación completa del módulo DAO
-
-- Desarrollo del menú (AppMenu)
-
-- Documentación de pruebas
-
-- Integración final y validaciones complementarias
-
-
-▶️ 7. Ejecución
-
-Desde IntelliJ o NetBeans:
-Ejecutar la clase:
+```
 main/AppMenu.java
+```
 
-El sistema abrirá un menú de consola con todas las opciones CRUD disponibles.
+Aparecerá el menú interactivo con todas las operaciones CRUD disponibles.
 
+---
 
-📝 8. Notas Finales
+## 8. 📝 Notas Finales
 
-Se utilizaron PreparedStatement para prevenir SQL Injection.
+- Se utilizan **PreparedStatement** para prevenir SQL Injection.  
+- `DatabaseConnection` usa archivo externo de configuración.  
+- La relación Libro ↔ FichaBibliografica respeta la **clave primaria compartida**.  
+- El proyecto sigue la arquitectura solicitada por la cátedra.  
 
-DatabaseConnection utiliza archivo externo de configuración.
+---
 
-La relación Libro ↔ FichaBibliografica respeta la clave primaria compartida.
-
-El proyecto sigue la arquitectura solicitada por la cátedra, sumando algunas carpetas y paquetes auxiliares.
-
-🎯 Fin del README
+🎯 **Fin del README**

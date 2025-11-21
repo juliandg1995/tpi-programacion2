@@ -1,81 +1,69 @@
-# ===========================
+#############################
+# Archivos que querés ocultar
+#############################
+
+# Archivo de manifiesto (generado por NetBeans para Ant)
+manifest.mf
+
+# Archivo de proyecto IntelliJ
+*.iml
+
+# Carpeta de proyecto NetBeans (solo lo privado, no las config públicas)
+nbproject/private/
+nbproject/*~
+nbproject/Makefile-*
+nbproject/Makefile-*.mk
+
+# Si querés ignorar toda la carpeta nbproject (lo que pediste explícitamente):
+nbproject/
+
+# Carpeta build de NetBeans (generada automáticamente)
+build/
+
+# Carpeta generada por IntelliJ IDEA
+.idea/
+
+#############################
 # Java
-# ===========================
+#############################
+
 *.class
+*.log
 *.jar
 *.war
 *.ear
-*.iml
-*.log
 *.ctxt
-
-# Evitar archivos generados por JVM
 hs_err_pid*
 replay_pid*
 
-# ===========================
-# NetBeans
-# ===========================
-nbproject/private/
-build/
-nbbuild/
+#############################
+# Directorios comunes de build
+#############################
 dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
-.nb-gradle/
-*.nb-gradle*
-
-# ===========================
-# Maven / Gradle (por si el IDE genera algo)
-# ===========================
-target/
 out/
-.gradle/
-build/
+target/
 
-# ===========================
-# Archivos de sistema (Windows / macOS / Linux)
-# ===========================
+#############################
+# Archivos de sistema
+#############################
+
 # Windows
 Thumbs.db
 Desktop.ini
 
 # macOS
 .DS_Store
-.AppleDouble
-.LSOverride
 
 # Linux
 *~
 
-# ===========================
-# IDEs adicionales
-# ===========================
-# IntelliJ IDEA
-.idea/
-*.ipr
-*.iws
-*.iml
+#############################
+# Configs opcionales a ignorar
+#############################
 
-# VS Code
-.vscode/
+# Configuración sensible (si fuera necesario)
+# db.properties
 
-# Eclipse
-.project
-.classpath
-.settings/
-
-# ===========================
-# Configuración sensible
-# ===========================
-
-#db.properties
-
-# ===========================
-# Librerías externas
-# ===========================
-
+# Librerías externas (si no querés subirlas)
 # lib/
 # *.jar
-

@@ -1,0 +1,272 @@
+Historias de Usuario - Sistema de Gestión de Libros y Fichas Bibliográficas
+TPI – Programación II
+Relación 1→1 con clave primaria compartida
+
+------------------------------------------------------------
+Tabla de Contenidos
+------------------------------------------------------------
+- Épica 1: Gestión de Libros
+- Épica 2: Gestión de Fichas Bibliográficas
+- Épica 3: Operaciones Asociadas Libro-Ficha
+- Reglas de Negocio
+- Modelo de Datos resumido
+------------------------------------------------------------
+
+ÉPICA 1: GESTIÓN DE LIBROS
+------------------------------------------------------------
+
+HU-001: Crear Libro con Ficha Bibliográfica
+------------------------------------------------------------
+Como usuario del sistema
+Quiero crear un nuevo libro con su ficha bibliográfica asociada
+Para registrar información completa y consistente en la base de datos
+
+Criterios de Aceptación (Gherkin)
+---------------------------------
+Escenario: Crear libro y ficha exitosamente
+  Dado que el usuario selecciona "Crear Libro con Ficha Bibliográfica"
+  Cuando ingresa título, autor, editorial y año válido
+  Y completa la ficha con ISBN, Dewey, estantería e idioma
+  Y confirma la operación
+  Entonces el sistema crea el libro
+  Y crea la ficha con el mismo ID
+  Y muestra "Libro creado exitosamente - ID: X"
+
+Escenario: Intento de crear libro sin título
+  Dado que el usuario quiere crear un libro
+  Cuando deja el título vacío
+  Entonces el sistema muestra "El título es obligatorio"
+  Y no crea el registro
+
+Escenario: ISBN duplicado
+  Dado que ya existe una ficha con un ISBN
+  Cuando el usuario ingresa ese mismo ISBN
+  Entonces el sistema muestra "El ISBN ya existe"
+  Y no persiste los datos
+
+Reglas de Negocio aplicables
+----------------------------
+RN-001: Título y autor son obligatorios  
+RN-002: ISBN debe ser único  
+RN-003: Libro y ficha se crean en transacción atómica  
+RN-004: El ID generado para Libro se asigna también a la ficha  
+
+Implementación técnica
+----------------------
+Clase: AppMenu.crearLibroConFicha()  
+Service: LibroServiceImpl.crearLibroConFicha()  
+DAO: LibroDao.crear() + FichaBibliograficaDao.crear() dentro de la misma conexión  
+Transacción: commit / rollback manual
+
+------------------------------------------------------------
+
+HU-002: Listar Todos los Libros
+------------------------------------------------------------
+Como usuario del sistema
+Quiero ver una lista completa de libros cargados
+Para consultar el estado de la biblioteca
+
+Criterios de Aceptación
+-----------------------
+Escenario: Listado con libros y fichas
+  Dado que existen libros con ficha cargada
+  Cuando el usuario selecciona "Listar todos los libros"
+  Entonces el sistema muestra cada libro
+  Y muestra el ISBN asociado
+
+Escenario: Sin libros
+  Dado que no existen registros
+  Cuando el usuario selecciona "Listar"
+  Entonces se muestra "No hay libros cargados"
+
+Reglas de Negocio
+-----------------
+RN-010: Solo se listan elementos con eliminado = false  
+RN-011: La ficha se obtiene mediante lookup por ID  
+
+Implementación técnica
+----------------------
+AppMenu.listarTodosLibros()  
+LibroService.listarTodos()  
+LibroDao.leerTodos()
+
+------------------------------------------------------------
+
+HU-003: Buscar Libro por ID
+------------------------------------------------------------
+Como usuario del sistema
+Quiero buscar un libro por su ID
+Para acceder rápidamente a su información
+
+Criterios de Aceptación
+-----------------------
+Escenario: ID válido
+  Dado que existe un libro con ID = 3
+  Cuando el usuario ingresa 3
+  Entonces el sistema muestra los datos del libro
+
+Escenario: ID inexistente
+  Cuando el usuario ingresa un ID no registrado
+  Entonces el sistema informa "No se encontró libro"
+
+Reglas
+------
+RN-015: ID debe ser numérico y positivo  
+
+Implementación
+--------------
+LibroService.buscarPorId()  
+LibroDao.leer()
+
+------------------------------------------------------------
+
+HU-004: Eliminar Libro (Borrado Lógico)
+------------------------------------------------------------
+Como usuario del sistema
+Quiero eliminar un libro sin borrar físicamente su registro
+Para mantener historial y evitar inconsistencias
+
+Criterios de Aceptación
+-----------------------
+Escenario: Eliminación correcta
+  Dado que existe un libro activo
+  Cuando el usuario elige eliminarlo
+  Entonces el sistema cambia eliminado = 1
+  Y no vuelve a aparecer en listados
+
+Escenario: Libro inexistente
+  Cuando se intenta eliminar ID no registrado
+  Entonces el sistema informa "No se encontró libro"
+
+Reglas
+------
+RN-020: Eliminación es lógica  
+RN-021: No se elimina físicamente por integridad  
+
+Implementación
+--------------
+LibroDao.eliminar()
+
+------------------------------------------------------------
+ÉPICA 2: GESTIÓN DE FICHA BIBLIOGRÁFICA
+------------------------------------------------------------
+
+HU-005: Crear Ficha Independiente (opcional)
+------------------------------------------------------------
+Como usuario
+Quiero poder crear una ficha independientemente
+Para asociarla a un libro más adelante
+
+Criterios
+---------
+Escenario: Crear ficha válida
+  Cuando ingreso un ISBN válido
+  Entonces se crea la ficha
+
+Escenario: ISBN inválido
+  Cuando ingreso letras no permitidas
+  Entonces el sistema rechaza la operación
+
+Reglas
+------
+RN-030: ISBN solo puede tener números, X/x y guiones  
+RN-031: ISBN máximo 17 caracteres  
+
+Implementación
+--------------
+FichaBibliograficaService.crear()
+
+------------------------------------------------------------
+
+HU-006: Buscar Ficha por ISBN
+------------------------------------------------------------
+Como usuario
+Quiero buscar una ficha por su ISBN
+Para verificar si ya está registrada
+
+Criterios
+---------
+Escenario: ISBN existente
+  Dado que existe una ficha
+  Cuando busco su ISBN
+  Entonces el sistema devuelve sus datos
+
+Escenario: No encontrado
+  Cuando busco un ISBN no registrado
+  Entonces el sistema muestra "Ficha no encontrada"
+
+Reglas
+------
+RN-040: ISBN obligatorio para búsqueda  
+
+Implementación
+--------------
+FichaBibliograficaService.buscarPorIsbn()
+
+------------------------------------------------------------
+ÉPICA 3: OPERACIONES ASOCIADAS LIBRO-FICHA
+------------------------------------------------------------
+
+HU-007: Crear Libro y Ficha en una única Transacción
+------------------------------------------------------------
+(ya descrita en HU-001 pero listada como operación propia)
+
+Reglas
+------
+RN-050: El fallo de uno revierte el otro  
+RN-051: commit solo si ambos inserts son exitosos  
+
+Implementación
+--------------
+LibroServiceImpl.crearLibroConFicha()
+
+------------------------------------------------------------
+
+HU-008: Cargar Ficha a Libro Existente
+------------------------------------------------------------
+Como usuario
+Quiero asignar una ficha bibliográfica a un libro que ya existe
+Para completar sus datos faltantes
+
+Criterios
+---------
+Escenario: Libro existente y ficha válida
+  Cuando asigno la ficha
+  Entonces la relación queda establecida
+
+Escenario: Libro inexistente
+  Entonces el sistema muestra error
+
+Reglas
+------
+RN-060: La ficha debe recibir el mismo ID del libro  
+
+Implementación
+--------------
+LibroService.asignarFichaBibliografica()
+
+------------------------------------------------------------
+REGLAS DE NEGOCIO (resumen)
+------------------------------------------------------------
+RN-001  Título obligatorio  
+RN-002  ISBN único  
+RN-003  Relación 1→1 con PK compartida  
+RN-010  Solo listar eliminados = false  
+RN-020  Eliminación lógica  
+RN-030  Validar formato de ISBN  
+RN-040  Búsqueda requiere ISBN no vacío  
+RN-050  Transacción atómica libro+ficha  
+RN-060  Ficha recibe ID del libro  
+
+------------------------------------------------------------
+MODELO DE DATOS RESUMIDO
+------------------------------------------------------------
+LIBRO (id PK, eliminado, titulo, autor, editorial, anio)
+FICHA_BIBLIOGRAFICA (id PK=FK libro.id, isbn UNIQUE, dewey, estanteria, idioma)
+
+Relación:
+LIBRO 1 → 1 FICHA (PK compartida)
+
+------------------------------------------------------------
+FIN DEL DOCUMENTO
+------------------------------------------------------------

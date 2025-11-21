@@ -6,6 +6,8 @@ import entities.Libro;
 import entities.FichaBibliografica;
 import java.util.Scanner;
 import java.util.List;
+import service.FichaBibliograficaService;
+import service.FichaBibliograficaServiceImpl;
 
 /**
  * Menú principal de consola para el Sistema de Gestión de Biblioteca Implementa
@@ -15,10 +17,12 @@ import java.util.List;
 public class AppMenu {
 
     private LibroService libroService;
+    private FichaBibliograficaService fichaService;
     private Scanner scanner;
 
     public AppMenu() {
         this.libroService = new LibroServiceImpl();
+        this.fichaService = new FichaBibliograficaServiceImpl();
         this.scanner = new Scanner(System.in);
     }
 
@@ -198,7 +202,8 @@ public class AppMenu {
     }
 
     /**
-     * Clase helper: Recorta una cadena a un largo máximo para que la tabla no se desarme.
+     * Clase helper: Recorta una cadena a un largo máximo para que la tabla no
+     * se desarme.
      */
     private String recortar(String texto, int max) {
         if (texto == null) {
@@ -208,7 +213,7 @@ public class AppMenu {
     }
 
     /**
-     * Operación 3: Listar Todos los Libros Muestra formato tabla 
+     * Operación 3: Listar Todos los Libros Muestra formato tabla
      */
     private void listarTodosLibros() {
         System.out.println("\nLISTADO COMPLETO DE LIBROS");
@@ -260,8 +265,88 @@ public class AppMenu {
     private void actualizarLibro() {
         System.out.println("\nACTUALIZAR LIBRO");
         System.out.println("------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            Long id = leerId("Ingrese el ID del libro a actualizar (o Enter para cancelar): ");
+            if (id == null) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            // Buscar el libro actual
+            Libro libro = libroService.buscarPorId(id);
+
+            System.out.println("\nDATOS ACTUALES DEL LIBRO:");
+            System.out.println("ID       : " + libro.getId());
+            System.out.println("Título   : " + libro.getTitulo());
+            System.out.println("Autor    : " + libro.getAutor());
+            System.out.println("Editorial: " + (libro.getEditorial() != null ? libro.getEditorial() : "-"));
+            System.out.println("Año      : " + (libro.getAnioEdicion() != null ? libro.getAnioEdicion() : "-"));
+
+            System.out.println("\nIngrese los nuevos datos (Enter para mantener el valor actual):");
+
+            // Título
+            String nuevoTitulo = leerCadena("Nuevo título [" + libro.getTitulo() + "]: ", true);
+            if (nuevoTitulo != null && !nuevoTitulo.trim().isEmpty()) {
+                libro.setTitulo(nuevoTitulo);
+            }
+
+            // Autor
+            String nuevoAutor = leerCadena("Nuevo autor [" + libro.getAutor() + "]: ", true);
+            if (nuevoAutor != null && !nuevoAutor.trim().isEmpty()) {
+                libro.setAutor(nuevoAutor);
+            }
+
+            // Editorial
+            String nuevaEditorial = leerCadena(
+                    "Nueva editorial [" + (libro.getEditorial() != null ? libro.getEditorial() : "-") + "]: ",
+                    true);
+            if (nuevaEditorial != null && !nuevaEditorial.trim().isEmpty()) {
+                libro.setEditorial(nuevaEditorial);
+            }
+
+            // Año de edición
+            while (true) {
+                String actualAnio = (libro.getAnioEdicion() != null ? libro.getAnioEdicion().toString() : "sin año");
+                String nuevoAnioStr = leerCadena(
+                        "Nuevo año de edición [" + actualAnio + "] (Enter para mantener): ",
+                        false);
+
+                if (nuevoAnioStr == null || nuevoAnioStr.trim().isEmpty()) {
+                    break; // mantener el actual
+                }
+
+                try {
+                    int nuevoAnio = Integer.parseInt(nuevoAnioStr);
+                    int anioActual = java.time.Year.now().getValue();
+
+                    if (nuevoAnio < 1000 || nuevoAnio > anioActual) {
+                        System.out.println("Año inválido. Debe estar entre 1000 y " + anioActual);
+                        continue;
+                    }
+                    libro.setAnioEdicion(nuevoAnio);
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Ingrese un año válido (solo números).");
+                }
+            }
+
+            // Confirmación
+            String confirmacion = leerCadena("\n¿Confirma la actualización? (s/n): ", true);
+            if (!"S".equals(confirmacion)) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            // Persistir cambios
+            libroService.actualizar(libro);
+            System.out.println("Libro actualizado correctamente.");
+
+        } catch (Exception e) {
+            manejarError(e, "actualizar libro");
+        } finally {
+            pausar("");
+        }
     }
 
     /**
@@ -271,8 +356,36 @@ public class AppMenu {
     private void eliminarLibro() {
         System.out.println("\nELIMINAR LIBRO (LÓGICO)");
         System.out.println("-------------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            Long id = leerId("Ingrese el ID del libro a eliminar (o Enter para cancelar): ");
+            if (id == null) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            // Mostrar datos del libro antes de eliminar
+            Libro libro = libroService.buscarPorId(id);
+
+            System.out.println("\nLibro seleccionado:");
+            System.out.println("ID     : " + libro.getId());
+            System.out.println("Título : " + libro.getTitulo());
+            System.out.println("Autor  : " + libro.getAutor());
+
+            String confirmacion = leerCadena("¿Confirma la eliminación lógica? (s/n): ", true);
+            if (!"S".equals(confirmacion)) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            libroService.eliminar(id);
+            System.out.println("Libro marcado como eliminado correctamente.");
+
+        } catch (Exception e) {
+            manejarError(e, "eliminar libro");
+        } finally {
+            pausar("");
+        }
     }
 
     /**
@@ -282,8 +395,40 @@ public class AppMenu {
     private void buscarPorIsbn() {
         System.out.println("\nBUSCAR POR ISBN");
         System.out.println("------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            String isbn = leerCadena("Ingrese el ISBN (o Enter para cancelar): ", false);
+            if (isbn == null || isbn.trim().isEmpty()) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            // Buscar ficha por ISBN
+            FichaBibliografica ficha = fichaService.buscarPorIsbn(isbn);
+            if (ficha == null) {
+                System.out.println("No se encontró ninguna ficha con el ISBN: " + isbn);
+                return;
+            }
+
+            // Obtener el libro asociado (PK compartida)
+            Libro libro = libroService.buscarPorId(ficha.getId());
+
+            System.out.println("\nRESULTADO ENCONTRADO:");
+            System.out.println("ID Libro : " + libro.getId());
+            System.out.println("Título   : " + libro.getTitulo());
+            System.out.println("Autor    : " + libro.getAutor());
+            System.out.println("Editorial: " + (libro.getEditorial() != null ? libro.getEditorial() : "-"));
+            System.out.println("Año      : " + (libro.getAnioEdicion() != null ? libro.getAnioEdicion() : "-"));
+            System.out.println("ISBN     : " + ficha.getIsbn());
+            System.out.println("Clasif.  : " + (ficha.getClasificacionDewey() != null ? ficha.getClasificacionDewey() : "-"));
+            System.out.println("Estant.  : " + (ficha.getEstanteria() != null ? ficha.getEstanteria() : "-"));
+            System.out.println("Idioma   : " + (ficha.getIdioma() != null ? ficha.getIdioma() : "-"));
+
+        } catch (Exception e) {
+            manejarError(e, "buscar por ISBN");
+        } finally {
+            pausar("");
+        }
     }
 
     /**
@@ -293,8 +438,33 @@ public class AppMenu {
     private void buscarPorTitulo() {
         System.out.println("\nBUSCAR POR TÍTULO");
         System.out.println("-------------------");
-        // Implementaremos esto después
-        System.out.println("Función en desarrollo...");
+
+        try {
+            String titulo = leerCadena("Ingrese el título (o Enter para cancelar): ", true);
+            if (titulo == null || titulo.trim().isEmpty()) {
+                System.out.println("Operación cancelada por el usuario.");
+                return;
+            }
+
+            Libro libro = libroService.buscarPorTitulo(titulo);
+
+            if (libro == null) {
+                System.out.println("No se encontró ningún libro con ese título.");
+                return;
+            }
+
+            System.out.println("\nRESULTADO ENCONTRADO:");
+            System.out.println("ID       : " + libro.getId());
+            System.out.println("Título   : " + libro.getTitulo());
+            System.out.println("Autor    : " + libro.getAutor());
+            System.out.println("Editorial: " + (libro.getEditorial() != null ? libro.getEditorial() : "-"));
+            System.out.println("Año      : " + (libro.getAnioEdicion() != null ? libro.getAnioEdicion() : "-"));
+
+        } catch (Exception e) {
+            manejarError(e, "buscar por título");
+        } finally {
+            pausar("");
+        }
     }
 
     // =========================================================================
@@ -367,7 +537,6 @@ public class AppMenu {
 
     /**
      * Pausa la ejecución hasta que el usuario presione Enter
-     *
      * @param mensaje Mensaje a mostrar antes de la pausa
      */
     private void pausar(String mensaje) {

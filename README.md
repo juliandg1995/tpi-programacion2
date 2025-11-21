@@ -73,37 +73,47 @@ CREATE TABLE ficha_bibliografica (
 
 🏗 4. Arquitectura del Proyecto
 
-src/
- main/java/
-   entities/
-     Libro.java
-     FichaBibliografica.java
-
-   dao/
-     LibroDao.java
-     FichaBibliograficaDao.java
-     GenericDao.java
-
-   service/
-     LibroService.java
-     LibroServiceImpl.java
-     FichaBibliograficaService.java
-     FichaBibliograficaServiceImpl.java
-     validations/ValidacionService.java
-
-   config/
-     DatabaseConnection.java
-
-   sql/
-     LibroSQL.java
-     FichaBibliograficaSQL.java
-
-   main/
-     AppMenu.java
-
- resources/
-   db.properties
-
+TPI-Grupo85-FichaBibliografica/
+├─ src/
+│  ├─ config/
+│  │  └─ DatabaseConnection.java
+│  │
+│  ├─ dao/
+│  │  ├─ GenericDao.java
+│  │  ├─ FichaBibliograficaDao.java
+│  │  └─ LibroDao.java
+│  │
+│  ├─ entities/
+│  │  ├─ FichaBibliografica.java
+│  │  └─ Libro.java
+│  │
+│  ├─ main/
+│  │  ├─ Main.java
+│  │  └─ AppMenu.java
+│  │
+│  ├─ service/
+│  │  ├─ GenericService.java
+│  │  ├─ LibroService.java
+│  │  ├─ LibroServiceImpl.java
+│  │  ├─ FichaBibliograficaService.java
+│  │  ├─ FichaBibliograficaServiceImpl.java
+│  │  └─ validations/
+│  │     └─ ValidacionService.java
+│  │
+│  ├─ sql/
+│  │  ├─ LibroSQL.java
+│  │  └─ FichaBibliograficaSQL.java
+│  │
+│  └─ db.properties
+│
+└─ test/
+   └─ test/
+      ├─ TestAppMenuEstructura.java
+      ├─ TestDatabaseConfig.java
+      ├─ TestLimpiezaBD.java
+      ├─ TestService.java
+      ├─ TestSinDependenciasCirculares.java
+      └─ TestTransaccionSimple.java
 
 ⚙️ 5. Funcionalidades del Sistema
 
@@ -152,6 +162,8 @@ Búsqueda por título.
 
 - Desarrollo del menú (AppMenu)
 
+- Documentación de pruebas
+
 - Integración final y validaciones complementarias
 
 
@@ -172,6 +184,6 @@ DatabaseConnection utiliza archivo externo de configuración.
 
 La relación Libro ↔ FichaBibliografica respeta la clave primaria compartida.
 
-El proyecto sigue estrictamente la arquitectura solicitada por la cátedra.
+El proyecto sigue la arquitectura solicitada por la cátedra, sumando algunas carpetas y paquetes auxiliares.
 
 🎯 Fin del README

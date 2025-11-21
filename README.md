@@ -69,81 +69,93 @@ CREATE TABLE ficha_bibliografica (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
+```
+
+🏗 4. Arquitectura del Proyecto
+
 src/
- └── main/java/
-      ├── entities/
-      │    ├── Libro.java
-      │    └── FichaBibliografica.java
-      ├── dao/
-      │    ├── LibroDao.java
-      │    ├── FichaBibliograficaDao.java
-      │    └── GenericDao.java
-      ├── service/
-      │    ├── LibroService.java
-      │    ├── LibroServiceImpl.java
-      │    ├── FichaBibliograficaService.java
-      │    ├── FichaBibliograficaServiceImpl.java
-      │    └── validations/ValidacionService.java
-      ├── config/
-      │    └── DatabaseConnection.java
-      ├── sql/
-      │    ├── LibroSQL.java
-      │    └── FichaBibliograficaSQL.java
-      └── main/
-           └── AppMenu.java
+ main/java/
+   entities/
+     Libro.java
+     FichaBibliografica.java
+
+   dao/
+     LibroDao.java
+     FichaBibliograficaDao.java
+     GenericDao.java
+
+   service/
+     LibroService.java
+     LibroServiceImpl.java
+     FichaBibliograficaService.java
+     FichaBibliograficaServiceImpl.java
+     validations/ValidacionService.java
+
+   config/
+     DatabaseConnection.java
+
+   sql/
+     LibroSQL.java
+     FichaBibliograficaSQL.java
+
+   main/
+     AppMenu.java
 
  resources/
-   └── db.properties
+   db.properties
 
-5. Funcionalidades del Sistema
+
+⚙️ 5. Funcionalidades del Sistema
 
 Crear Libro junto con su Ficha Bibliográfica en una transacción atómica.
 
 Listar todos los libros con sus fichas (si existen).
 
-Buscar libro por ID (función en desarrollo).
+Buscar libro por ID.
 
-Actualizar libro (función en desarrollo).
+Actualizar libro.
 
 Eliminación lógica de libro.
 
-Búsqueda por ISBN (función en desarrollo).
+Búsqueda por ISBN.
 
-Búsqueda por título (función en desarrollo).
+Búsqueda por título.
 
-6. Equipo de Trabajo (roles)
 
-Sandra Débora Martínez
+👥 6. Equipo de Trabajo (Roles)
 
-Implementación de las entidades Libro y FichaBibliografica
+👩 Sandra Débora Martínez
 
-Presentación teórica del módulo DAO
+- Implementación de entidades Libro y FichaBibliografica
 
-Melisa Inés Martellini
+- Presentación teórica del módulo DAO
 
-Diseño del Diagrama UML de Clases
+👩 Melisa Inés Martellini
 
-Generación de los scripts SQL (CREATE TABLE, FK, UNIQUE, relación 1→1)
+- Diseño del Diagrama UML
 
-Implementación de DatabaseConnection (config/)
+- Scripts SQL (CREATE TABLE, FK, UNIQUE, relación 1→1)
 
-Fabricio Nicolás Puccio
+- Implementación de DatabaseConnection
 
-Implementación de la capa Service
+👨 Fabricio Nicolás Puccio
 
-Manejo de transacciones en LibroServiceImpl
+- Implementación de la capa Service
 
-Desarrollo de la lógica de negocio
+- Manejo de transacciones en LibroServiceImpl
 
-Julián Daniel Gómez
+- Lógica de negocio
 
-Implementación completa del módulo DAO
+👨 Julián Daniel Gómez
 
-Desarrollo del menú principal (AppMenu)
+- Implementación completa del módulo DAO
 
-Integración final del sistema y validaciones complementarias
+- Desarrollo del menú (AppMenu)
 
-7. Ejecución
+- Integración final y validaciones complementarias
+
+
+▶️ 7. Ejecución
 
 Desde IntelliJ o NetBeans:
 Ejecutar la clase:
@@ -151,7 +163,8 @@ main/AppMenu.java
 
 El sistema abrirá un menú de consola con todas las opciones CRUD disponibles.
 
-8. Notas Finales
+
+📝 8. Notas Finales
 
 Se utilizaron PreparedStatement para prevenir SQL Injection.
 
@@ -160,3 +173,5 @@ DatabaseConnection utiliza archivo externo de configuración.
 La relación Libro ↔ FichaBibliografica respeta la clave primaria compartida.
 
 El proyecto sigue estrictamente la arquitectura solicitada por la cátedra.
+
+🎯 Fin del README

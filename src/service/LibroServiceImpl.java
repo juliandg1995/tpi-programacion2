@@ -127,7 +127,7 @@ public class LibroServiceImpl implements LibroService {
             System.out.println("   Asignando mismo ID a ficha: " + libro.getId());
 
             // 4. CREAR FICHA (con el DAO de Julian)
-            System.out.println("   nsertando ficha bibliográfica...");
+            System.out.println("   Insertando ficha bibliográfica...");
             fichaDAO.crear(ficha, conn);
 
             // 5. ESTABLECER RELACIÓN EN MEMORIA
